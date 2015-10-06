@@ -6,10 +6,12 @@ class Attrib:
 
 	def __xor__(self, other):
 		# (0 + 0)= 000 << 1 = 0 % 3 = 0
-		# (0 + 1)= 001 << 1 = 2 % 3 = 0
+		# (1 + 2)= 011 << 1 = 6 % 3 = 0
+		#
 		# (0 + 2)= 010 << 1 = 4 % 3 = 1
 		# (1 + 1)= 010 << 1 = 4 % 3 = 1
-		# (1 + 2)= 011 << 1 = 5 % 3 = 2
+		#
+		# (0 + 1)= 001 << 1 = 2 % 3 = 2
 		# (2 + 2)= 100 << 1 = 8 % 3 = 2
 		# In other words, a convenient property where the output is 'the same' as both parameters if both parameters are equal, 
 		# or the third 'different' output if both parameters are not equal
