@@ -58,9 +58,6 @@ class Card:
 		self.fillAttrib = FillAttrib(listArgs[2])
 		self.shapeAttrib = ShapeAttrib(listArgs[3])
 
-#	def __str__(self):
-#		return str(self.numberAttrib) +  ' ' +  str(self.colorAttrib) + ' ' +  str(self.fillAttrib) +  ' ' + str(self.shapeAttrib)
-
 	def __repr__(self):
 		return "Card('%s', '%s, '%s', '%s')" % (str(self.numberAttrib), str(self.colorAttrib), str(self.fillAttrib), str(self.shapeAttrib))
 
