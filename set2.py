@@ -1,5 +1,5 @@
 class Attrib:
-	value = 0b00
+	value = 0
 	attribVals = []
 	def __init__(self, newVal):
 		self.value = self.attribVals.index(newVal)
