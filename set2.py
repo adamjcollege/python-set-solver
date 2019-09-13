@@ -1,8 +1,12 @@
 class Attrib:
-	value = 0
-	attribVals = []
+	#value = 0
+	#attribVals = []
 	def __init__(self, newVal):
-		self.value = self.attribVals.index(newVal)
+		try:
+			self.value = self.attribVals.index(newVal)
+		except ValueError:
+			print("{0} is not a valid attribute".format(newVal))
+			raise
 
 	def __xor__(self, other):
 		# (0 + 0)= 000 << 1 = 0 % 3 = 0
@@ -17,17 +21,17 @@ class Attrib:
 		# or the third 'different' output if both parameters are not equal
 		return self.attribVals[((self.value + other.value) << 1) % 3]
 
-	def property(self):
+	def getProperty(self):
 		return self.attribVals[self.value]
 	
 	def __str__(self):
-		return self.property()
+		return str(self.getProperty())
 
 	def __eq__(self, other):
-		return self.property() == other.property()
+		return self.getProperty() == other.getProperty()
 	
 	def __ne__(self, other):
-		return self.property() != other.property()
+		return self.getProperty() != other.getProperty()
 
 class ShapeAttrib(Attrib):
 	def __init__(self, newVal):
@@ -59,7 +63,7 @@ class Card:
 		self.shapeAttrib = ShapeAttrib(listArgs[3])
 
 	def __repr__(self):
-		return "Card('%s', '%s, '%s', '%s')" % (str(self.numberAttrib), str(self.colorAttrib), str(self.fillAttrib), str(self.shapeAttrib))
+		return "Card({0} {1} {2} {3})".format(self.numberAttrib, self.colorAttrib, self.fillAttrib, (self.shapeAttrib if int(str(self.numberAttrib)) == 1 else str(self.shapeAttrib) + "s"))
 
 	def findThirdCard(self, comparison):
 		number = self.numberAttrib ^ comparison.numberAttrib
@@ -80,7 +84,7 @@ class Deck:
 		self.cards.append(Card(args))
 
 	def __str__(self):
-		return self.cards
+		return str(self.cards)
 
 	def findSet(self):
 		foundSets = []
@@ -93,4 +97,4 @@ class Deck:
 					if foundSet not in foundSets:
 						foundSets.append(foundSet)
 		for set in foundSets:
-			print set
+			print(set)
