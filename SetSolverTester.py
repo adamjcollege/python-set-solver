@@ -1,5 +1,5 @@
 import unittest
-from set2 import ShapeAttrib, FillAttrib, ColorAttrib, NumberAttrib,  Card, Deck
+from SetSolver import ShapeAttrib, FillAttrib, ColorAttrib, NumberAttrib,  Card, Deck
 
 
 class SetSolverTestMethods(unittest.TestCase):
