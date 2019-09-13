@@ -23,6 +23,9 @@ def printTest(x, y, z):
 	print z, " ^ ", x, ": ", z ^ x
 	print y, " ^ ", z, ": ", y ^ z
 	print z, " ^ ", y, ": ", z ^ y
+	print x, " ^ ", x, ": ", x ^ x
+	print y, " ^ ", y, ": ", y ^ y
+	print z, " ^ ", z, ": ", z ^ z
 
 
 def test():
