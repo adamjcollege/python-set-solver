@@ -1,3 +1,7 @@
+import sys, argparse
+from itertools import combinations
+
+
 class Attrib:
 	#value = 0
 	#attribVals = []
@@ -33,10 +37,14 @@ class Attrib:
 	def __ne__(self, other):
 		return self.getProperty() != other.getProperty()
 
+	def __gt__(self, other):
+		return self.getProperty() > other.getProperty()
+
 class ShapeAttrib(Attrib):
 	def __init__(self, newVal):
 		self.attribVals = ['diamond', 'oval', 'squiggle']
-		Attrib.__init__(self, newVal)
+		#for shapes, can pluralize
+		Attrib.__init__(self, newVal.rstrip('s'))
 	
 
 class ColorAttrib(Attrib):
@@ -55,22 +63,19 @@ class NumberAttrib(Attrib):
 		Attrib.__init__(self, newVal)
 
 class Card:
-	def __init__(self, args):
-		listArgs = args.split(' ')
+	def __init__(self, listArgs):
 		self.numberAttrib = NumberAttrib(listArgs[0])
 		self.colorAttrib = ColorAttrib(listArgs[1])
 		self.fillAttrib = FillAttrib(listArgs[2])
 		self.shapeAttrib = ShapeAttrib(listArgs[3])
 
+	@classmethod
+	def fromString(cls, inputString):
+		return cls(inputString.split(' '))
+
 	def __repr__(self):
 		return "Card({0} {1} {2} {3})".format(self.numberAttrib, self.colorAttrib, self.fillAttrib, (self.shapeAttrib if int(str(self.numberAttrib)) == 1 else str(self.shapeAttrib) + "s"))
 
-	def findThirdCard(self, comparison):
-		number = self.numberAttrib ^ comparison.numberAttrib
-		color = self.colorAttrib ^ comparison.colorAttrib
-		fill = self.fillAttrib ^ comparison.fillAttrib
-		shape = self.shapeAttrib ^ comparison.shapeAttrib
-		return Card(str(number) + ' ' + str(color) + ' ' + str(fill) + ' ' + str(shape))
 	
 	def __eq__(self, other):
 		return (self.numberAttrib == other.numberAttrib) &  \
@@ -78,23 +83,73 @@ class Card:
 			(self.fillAttrib == other.fillAttrib) &  \
 			(self.shapeAttrib == other.shapeAttrib)
 
+	def __gt__(self, other):
+		if(self.numberAttrib > other.numberAttrib):
+			return True 
+		if(self.colorAttrib > other.colorAttrib):
+			return True
+		if(self.fillAttrib > other.fillAttrib):
+			return True
+		if(self.shapeAttrib > other.shapeAttrib):
+			return True
+		return False
+
+
 class Deck:
 	cards = []
-	def addCard(self, args):
-		self.cards.append(Card(args))
+	def addCard(self, cardArg):
+		self.cards.append(cardArg)
+		
 
 	def __str__(self):
 		return str(self.cards)
 
 	def findSet(self):
 		foundSets = []
-		reviewed = []
-		for index, card in enumerate(self.cards[:-1]):
-			for comparison in self.cards[index+1:]:
-				thirdCard = card.findThirdCard(comparison)
-				if (thirdCard in self.cards):
-					foundSet = sorted([card, comparison, self.cards[self.cards.index(thirdCard)]])
-					if foundSet not in foundSets:
-						foundSets.append(foundSet)
+		twoCardCombinationSets = combinations(self.cards, 2)
+		for twoCardCombination in twoCardCombinationSets:
+			thirdCard = self.findThirdCard(twoCardCombination[0], twoCardCombination[1])
+			if (thirdCard):
+				foundSet = sorted([str(twoCardCombination[0]), str(twoCardCombination[1]), str(thirdCard)])
+				if foundSet not in foundSets:
+					foundSets.append(foundSet)
+
 		for set in foundSets:
 			print(set)
+
+	def findThirdCard(self, firstCard, secondCard):
+		number = firstCard.numberAttrib ^ secondCard.numberAttrib
+		color = firstCard.colorAttrib ^ secondCard.colorAttrib
+		fill = firstCard.fillAttrib ^ secondCard.fillAttrib
+		shape = firstCard.shapeAttrib ^ secondCard.shapeAttrib
+		testCard = Card([number, color, fill, shape])
+		for card in self.cards:
+			if card == testCard:
+				return card
+		return False
+
+def load_cards_from_file(f):
+	#f = open(filename, "r")
+	f1 = f.readlines()
+	deck = Deck()
+	for line in f1:
+		card = Card.fromString(line.strip())
+		deck.addCard(card)
+	deck.findSet()
+
+def main():
+	parser = argparse.ArgumentParser(description='A Solver for the Game Set.')
+	#parser.add_argument('-f', '--file', metavar='N', type=string, nargs='+',
+    #                help='an integer for the accumulator')
+	parser.add_argument('--fill', nargs=3, metavar="FillValue", help='Use custom descriptors for fill, such as empty, shaded, and solid')
+	parser.add_argument('file', type=argparse.FileType('r'))
+	args = parser.parse_args()
+	load_cards_from_file(args.file)
+	#print(args.fill)
+
+if __name__ == '__main__':
+	main()
+	#
+	#load_cards_from_file(sys.argv[1])
+
+
