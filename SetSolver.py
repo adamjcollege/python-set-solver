@@ -1,10 +1,9 @@
 import sys, argparse
 from itertools import combinations
 
+customFillValues = False
 
 class Attrib:
-	#value = 0
-	#attribVals = []
 	def __init__(self, newVal):
 		try:
 			self.value = self.attribVals.index(newVal)
@@ -54,7 +53,10 @@ class ColorAttrib(Attrib):
 
 class FillAttrib(Attrib):
 	def __init__(self, newVal):
-		self.attribVals = ['hollow', 'hatched', 'filled']
+		if(customFillValues):
+			self.attribVals = customFillValues
+		else: 
+			self.attribVals = ['hollow', 'hatched', 'filled']
 		Attrib.__init__(self, newVal)
 
 class NumberAttrib(Attrib):
@@ -128,28 +130,26 @@ class Deck:
 				return card
 		return False
 
-def load_cards_from_file(f):
-	#f = open(filename, "r")
+def load_cards_from_file(f, fill):
+	if(fill):
+		global customFillValues
+		customFillValues = f.readline().split()
 	f1 = f.readlines()
 	deck = Deck()
 	for line in f1:
 		card = Card.fromString(line.strip())
 		deck.addCard(card)
-	deck.findSet()
+	return deck
 
 def main():
 	parser = argparse.ArgumentParser(description='A Solver for the Game Set.')
-	#parser.add_argument('-f', '--file', metavar='N', type=string, nargs='+',
-    #                help='an integer for the accumulator')
-	parser.add_argument('--fill', nargs=3, metavar="FillValue", help='Use custom descriptors for fill, such as empty, shaded, and solid')
+	parser.add_argument('--fill', action='store_true', help='Optional: Line 1 of input file uses custom descriptors for fill, such as empty, shaded, and solid')
 	parser.add_argument('file', type=argparse.FileType('r'))
 	args = parser.parse_args()
-	load_cards_from_file(args.file)
-	#print(args.fill)
+	deck = load_cards_from_file(args.file, args.fill)
+	deck.findSet()
 
 if __name__ == '__main__':
 	main()
-	#
-	#load_cards_from_file(sys.argv[1])
 
 
